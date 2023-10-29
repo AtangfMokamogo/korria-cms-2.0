@@ -6,7 +6,6 @@ import { hashPassword, decryptPassword } from "../controllers/bcrypt.js";
 import { verifyToken, tokenise } from "../controllers/jwt.js";
 
 const User = mongoose.model('User', userSchema);
-/* eslint-disable import/prefer-default-export */
 const books = [
   {
     title: 'The Awakening',
@@ -28,18 +27,15 @@ export const resolvers = {
     books: () => books,
     users: async () => {
       const user = await User.find({});
-
+      console.log(user);
       return user;
     },
-  },
-
-  Query: {
     clientByEmail: async (root, args) => {
       const user = await User.findOne({email: args.email});
       if(!user) {
         throw new GraphQLError('User: ${args.email} is not available!');
       }
-
+      return user;
     },
   },
 /** End Query Resolvers */
@@ -99,4 +95,3 @@ export const resolvers = {
   },
 /** End Query Mutation Reslovers */
 };
-
