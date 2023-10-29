@@ -85,6 +85,7 @@
     "detect-newline": "^3.1.0",
     "diff-sequences": "^29.6.3",
     "doctrine": "^3.0.0",
+    "dotenv": "^16.3.1",
     "ecdsa-sig-formatter": "^1.0.11",
     "ee-first": "^1.1.1",
     "electron-to-chromium": "^1.4.569",

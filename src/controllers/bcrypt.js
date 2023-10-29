@@ -13,7 +13,7 @@ export async function hashPassword(password) {
 /**
  * This function decrypts a hashed string
  * @param {String} hashPass A bcrypt hashed string to decipher
- * @returns a deciphered string
+ * @returns true for a verified password else false
  */
 export async function decryptPassword(hashPass, password) {
     return bcrypt.compareSync(hashPass, password)

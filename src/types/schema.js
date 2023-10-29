@@ -14,6 +14,11 @@ export const typeDefs = `#graphql
     password: String!
   }
 
+  type AuthDetails {
+    token: String
+    user: User
+  }
+
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "books" query returns an array of zero or more Books (defined above).
@@ -22,8 +27,16 @@ export const typeDefs = `#graphql
     users: [User]
   }
 
+  type Query {
+    clientByEmail(email: String!): User
+  }
+
   type Mutation {
-    addUser(fullname: String!, email: String!, password: String!): User
+    signup(fullname: String!, email: String!, password: String!): User
+  }
+
+  type Mutation {
+    login(email: String!, password: String!): AuthDetails
   }
   
 `;
