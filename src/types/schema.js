@@ -7,6 +7,45 @@ export const typeDefs = `#graphql
     author: String
   }
 
+  #INUPT TYPES
+  input TagInput {
+    tags: [String!]
+  }
+
+  input ParcelInput {
+    title: String!
+    project: String!
+    tags: [String!]
+    images: [ImageInput!]
+    texts: [TextInput!]
+    order: [OrderInput!]
+  }
+
+  input ImageInput {
+    title: String!
+    src: String!
+    alt: String!
+    project: String!
+    order: [OrderInput!]
+    copyright: String!
+    tags: [String!] 
+  }
+
+  input TextInput {
+    title: String!
+    payload: String!
+    project: String!
+    order: [OrderInput!]
+    tags: [String!]
+  }
+
+  input OrderInput {
+    title: String!
+    project: String!
+    tags: [String!]
+  }
+  #END INPUT TYPES
+
   #USER AND AUTH TYPES
   type User {
     fullname: String!
@@ -22,36 +61,25 @@ export const typeDefs = `#graphql
 
   #CONTENT DATA TYPES
 
-  """
-  The Image type represent images uploaded to Korria CMS image server.
-  All images will be supplied via a source link. Downloads are currently not supported.
-  """
   type Image {
     id: String!
     title: String!
     src: String!
     alt: String!
     project: Project!
-    order: String
+    order: [Order!]
     copyright: String
     tags: [String!]
     uploadedby: User!
     uploadedon: String!
-  }
+  } 
 
-  input 
-
-  """
-  The Text type represents Textual content.
-  Text should be plain text, as support for different types of text is minimal.
-  Please avoid injecting raw HTML into text!
-  """
   type Text {
     id: String!
     title: String!
     payload: String!
     project: Project!
-    order: String
+    order: [Order!]
     tags: [String!]
     createdby: User!
     createdon: String!
@@ -60,14 +88,10 @@ export const typeDefs = `#graphql
 
   #ORDER TYPE
 
-  """
-  Orders are an organisatin mechanism of Korria.
-  They allow a client to group content under a single title.
-  Clients can retrieve content filtered by orders
-  """
   type Order {
     id: String!
     title: String!
+    project: Project!
     createdby: User!
     createdon: String!
     tags: [String!]
@@ -78,7 +102,7 @@ export const typeDefs = `#graphql
   type Parcel {
     id: String!
     title: String!
-    project: Project!
+    project: String!
     tags: [String!]
     images: [Image!]
     texts: [Text!]
@@ -91,10 +115,6 @@ export const typeDefs = `#graphql
 
   #PROJECT TYPES
 
-  """
-  Projects are at the root of content management in Korria.
-  They are the primary containers of content. YOu need to define a project before making content.
-  """
   type Project {
     id: String!
     title: String!
@@ -112,10 +132,16 @@ export const typeDefs = `#graphql
   type Query {
     books: [Book]
     users: [User]
+    texts: [Text]
+    images: [Image]
+    parcels: [Parcel]
+    projects: [Project]
+    orders: [Order]
   }
 
   type Query {
     clientByEmail(email: String!): User
+    ordersByID(orderID: String!): Order
   }
   #END QUERYTYPES
   
@@ -123,6 +149,7 @@ export const typeDefs = `#graphql
   type Mutation {
     signup(fullname: String!, email: String!, password: String!): User
     login(email: String!, password: String!): AuthDetails
+    createParcel(input: ParcelInput!): Parcel
   }
   #END MUTATION TYPES
 `;

@@ -2,7 +2,7 @@ import { mongoose } from 'mongoose';
 
 export const dbConnect = () => {
   try {
-    mongoose.connect('mongodb://localhost:27017/korriadb', {
+    mongoose.connect('mongodb://localhost:27017/korria-cms', {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     });
