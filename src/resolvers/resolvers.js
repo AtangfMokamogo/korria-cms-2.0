@@ -4,6 +4,7 @@ import {
   getAllParcels,
   getAllOrders,
   getAllImages,
+  getAllTexts,
   getAllProjects,
   signUp,
   logIn,
@@ -36,6 +37,10 @@ export const resolvers = {
     images: async () => {
       const images = await getAllImages();
       return images;
+    },
+
+    texts: async () => {
+      return await getAllTexts();
     },
 
     ordersByID: (root, args) => {

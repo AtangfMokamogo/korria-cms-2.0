@@ -147,8 +147,8 @@ export const typeDefs = `#graphql
   
   #MUTATION TYPES
   type Mutation {
-    signup(fullname: String!, email: String!, password: String!): User
-    login(email: String!, password: String!): AuthDetails
+    signUp(fullname: String!, email: String!, password: String!): User
+    logIn(email: String!, password: String!): AuthDetails
     createParcel(input: ParcelInput!): Parcel
   }
   #END MUTATION TYPES
