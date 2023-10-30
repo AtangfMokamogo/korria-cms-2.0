@@ -1,9 +1,4 @@
-import mongoose from 'mongoose';
-
-// Import your functions to be tested
-import { getAllUsers, getAllOrders } from "../src/controllers/queryResolvers.js"; // replace with your actual file path
-
-// Mock mongoose and Schema
+import { getAllUsers, getAllOrders } from "../src/controllers/resolverHandlers.js";
 jest.mock('mongoose', () => {
   const mongoose = jest.requireActual('mongoose');
   return {

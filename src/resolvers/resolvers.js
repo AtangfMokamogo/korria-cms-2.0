@@ -8,7 +8,7 @@ import {
   getAllProjects,
   signUp,
   logIn,
-} from "../controllers/queryResolvers.js";
+} from "../controllers/resolverHandlers.js";
 
 export const resolvers = {
 

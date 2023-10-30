@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { validateEmail } from "../utils/stringValidators.js";
-import { hashPassword, decryptPassword } from "../controllers/bcrypt.js";
-import { verifyToken, tokenise } from "../controllers/jwt.js";
+import { hashPassword, decryptPassword } from "./bcrypt.js";
+import { verifyToken, tokenise } from "./jwt.js";
 import { GraphQLError } from "graphql";
 import { userSchema } from "../models/user.js";
 import { imageSchema } from '../models/image.js';
