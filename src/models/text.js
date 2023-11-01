@@ -21,11 +21,12 @@ export const textSchema = new Schema({
 
     tags: {
         type: [String],
+        default: []
     },
 
     order: {
-        type: String,
-        ref: 'Order',
+        type: [String],
+        default: []
     },
 
     createdby: {

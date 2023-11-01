@@ -1,32 +1,39 @@
-import mongoose from "mongoose";
+import { GraphQLError } from "graphql";
+import { verifyToken} from "../controllers/jwt.js";
 import { 
-  getAllUsers,
-  getAllParcels,
-  getAllOrders,
+  getUser,
+  getParcels,
   getAllImages,
-  getAllTexts,
+  getTexts,
   getAllProjects,
   signUp,
   logIn,
+  createText,
+  createProject,
+  createParcel
 } from "../controllers/resolverHandlers.js";
+
 
 export const resolvers = {
 
 /** Query Resolvers */
   Query: {
-    users: async ()=> {
-      const users = await getAllUsers();
+    users: async (root, args)=> {
+      if(!args.id){
+        throw new GraphQLError('User ID not found in query!')
+      }
+      const users = await getUser(args.id);
       return users
     },
 
-    orders: async () => {
-      const orders = await getAllOrders();
-      return orders
-    },
-
-    parcels: async () => {
-      const parcels = await getAllParcels();
-      return parcels;
+    parcels: async (root, args, context) => {
+      if(!context.token){
+        throw new GraphQLError('Token not found! Please log in to complete Query');
+      }
+      if (await verifyToken(context.token)){
+        const queryStatus = await getParcels(args);
+        return queryStatus;   
+      }
     },
 
     projects: async () => {
@@ -34,65 +41,66 @@ export const resolvers = {
       return projects;
     },
 
-    images: async () => {
+    images: async (root, args, context) => {
       const images = await getAllImages();
+      console.log(context);
       return images;
     },
 
-    texts: async () => {
-      return await getAllTexts();
+    texts: async (root, args) => {
+      return await getTexts(args);
     },
-
-    ordersByID: (root, args) => {
-      const orders = [
-        {
-          id: "001",
-          title: "Blog Order",
-          createdby: {
-            email: "my email",
-            fullname: "my name",
-            password: "my pass",
-          },
-          createdon: "Today",
-          tags: ["blog", "test"],
-        },
-        {
-          id: "002",
-          title: "Blog Order",
-          createdby: {
-            email: "my email",
-            fullname: "my name",
-            password: "my pass",
-          },
-          createdon: "Today",
-          tags: ["blog", "test"],
-        }   
-      ];
-
-      let foundOrder = null;
-
-      orders.forEach((order) => {
-        if (order.id === args.orderID) {
-          foundOrder = order;
-        }
-      });
-    
-      return foundOrder;
-    }
   },
 /** End Query Resolvers */
 
 
 /** Mutations Resolvers*/
   Mutation: {
+    /** User Creation */
     signUp: async (root, args) => {
         const result = await signUp(args);
-        return result
+        return result;
       },
 
+    
     logIn: async (root, args) => {
       const result = await logIn(args);
-      return result
+      return result;
+    },
+    
+    /** Project Creation */
+    createProject: async (root, args, context) => {
+      if(!context.token){
+        throw new GraphQLError('Token not found! Please log in to complete Query');
+      }
+      const {
+        userID
+      } = await verifyToken(context.token);
+      const queryStatus = await createProject(args, userID);
+      return queryStatus;      
+    },
+    /** Content Definition */
+
+    createText: async (root, args, context) => {
+      if(!context.token){
+        throw new GraphQLError('Token not found! Please log in to complete Query');
+      }
+      const {
+        userID
+      } = await verifyToken(context.token);
+      const queryStatus = await createText(args, userID);
+      return queryStatus;
+    },
+
+    createParcel: async (root, args, context) => {
+      if(!context.token){
+        throw new GraphQLError('Token not found! Please log in to complete Query');
+      }
+      const {
+        userID
+      } = await verifyToken(context.token);
+      const queryStatus = await createParcel(args, userID);
+      return queryStatus;
     }
   },
 /** End Query Mutation Resolvers */

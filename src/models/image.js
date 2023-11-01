@@ -30,18 +30,18 @@ export const imageSchema = new Schema({
     },
 
     order: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order',
+        type: [String],
+        default: []
     },
 
     tags: {
         type: [String],
+        default: [],
     },
 
     uploadedby: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: [true, 'User stated in image does not exist']
     },
 
     uploadedon: {

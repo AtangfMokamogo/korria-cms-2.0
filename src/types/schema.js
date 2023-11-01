@@ -1,32 +1,30 @@
 export const typeDefs = `#graphql
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: String
-  }
 
   #INUPT TYPES
   input TagInput {
     tags: [String!]
   }
 
+  input ProjectInput {
+    title: String!
+    tags: [String!]
+  }
+
   input ParcelInput {
     title: String!
-    project: String!
+    project: ProjectInput!
     tags: [String!]
     images: [ImageInput!]
     texts: [TextInput!]
-    order: [OrderInput!]
+    order: [String!]
   }
 
   input ImageInput {
     title: String!
     src: String!
     alt: String!
-    project: String!
-    order: [OrderInput!]
+    project: ProjectInput!
+    order: [String!]
     copyright: String!
     tags: [String!] 
   }
@@ -34,16 +32,11 @@ export const typeDefs = `#graphql
   input TextInput {
     title: String!
     payload: String!
-    project: String!
-    order: [OrderInput!]
+    project: ProjectInput!
+    order: [String!]
     tags: [String!]
   }
 
-  input OrderInput {
-    title: String!
-    project: String!
-    tags: [String!]
-  }
   #END INPUT TYPES
 
   #USER AND AUTH TYPES
@@ -62,12 +55,11 @@ export const typeDefs = `#graphql
   #CONTENT DATA TYPES
 
   type Image {
-    id: String!
     title: String!
     src: String!
     alt: String!
     project: Project!
-    order: [Order!]
+    order: [String!]
     copyright: String
     tags: [String!]
     uploadedby: User!
@@ -75,38 +67,33 @@ export const typeDefs = `#graphql
   } 
 
   type Text {
-    id: String!
     title: String!
     payload: String!
     project: Project!
-    order: [Order!]
+    order: [String!]
     tags: [String!]
     createdby: User!
     createdon: String!
+  }
+
+  type ContentTypeDefinationSuccess{
+    message: String
+    id: String
+    type: String
+    date: String
   }
   #END CONTENT DATA TYPES
 
-  #ORDER TYPE
-
-  type Order {
-    id: String!
-    title: String!
-    project: Project!
-    createdby: User!
-    createdon: String!
-    tags: [String!]
-  }
   #END ORDER TYPE
 
   #PARCEL TYPE
   type Parcel {
-    id: String!
     title: String!
-    project: String!
+    project: Project!
     tags: [String!]
     images: [Image!]
     texts: [Text!]
-    order: [Order!]
+    order: [String!]
     createdby: User!
     createdon: String!
 
@@ -116,12 +103,7 @@ export const typeDefs = `#graphql
   #PROJECT TYPES
 
   type Project {
-    id: String!
     title: String!
-    parcels: [Parcel!]
-    orders: [Order!]
-    images: [Image!]
-    texts: [Text!]
     createdby: User!
     createdon: String!
     tags: [String!]
@@ -130,18 +112,15 @@ export const typeDefs = `#graphql
 
   #QUERY TYPES
   type Query {
-    books: [Book]
-    users: [User]
-    texts: [Text]
-    images: [Image]
-    parcels: [Parcel]
-    projects: [Project]
-    orders: [Order]
+    users(id: String!): User
+    texts(order: [String!], project: ProjectInput!, tags: TagInput): [Text]
+    images(order: [String!], project: ProjectInput!, tags: TagInput): [Image]
+    parcels(filterBy: ParcelInput): [Parcel]
+    projects(userEmail: String!): [Project]
   }
 
   type Query {
     clientByEmail(email: String!): User
-    ordersByID(orderID: String!): Order
   }
   #END QUERYTYPES
   
@@ -149,7 +128,12 @@ export const typeDefs = `#graphql
   type Mutation {
     signUp(fullname: String!, email: String!, password: String!): User
     logIn(email: String!, password: String!): AuthDetails
-    createParcel(input: ParcelInput!): Parcel
+    createParcel(input: ParcelInput!): ContentTypeDefinationSuccess
+  }
+
+  type Mutation {
+    createText(textData: TextInput!): ContentTypeDefinationSuccess
+    createProject(projectData: ProjectInput): ContentTypeDefinationSuccess
   }
   #END MUTATION TYPES
 `;
