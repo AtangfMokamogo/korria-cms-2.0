@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-export const textSchema = new Schema({
+const TextFields = new Schema({
     title: {
         type: String,
         required: true,
@@ -11,12 +11,6 @@ export const textSchema = new Schema({
     payload: {
         type: String,
         required: [true, 'Text type has no payload'],
-    },
-
-    project: {
-        type: String,
-        ref: 'Project',
-        required: true,
     },
 
     tags: {
@@ -28,11 +22,17 @@ export const textSchema = new Schema({
         type: [String],
         default: []
     },
+})
 
-    createdby: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: [true, 'User stated in text type does not exist'],
+export const textSchema = new Schema({
+    type: {
+        type: String,
+        required: true,
+    },
+    
+    fields: {
+        type: TextFields,
+        required: true,
     },
 
     createdon: {

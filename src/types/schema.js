@@ -11,7 +11,7 @@ export const typeDefs = `#graphql
   }
 
   input ParcelInput {
-    title: String!
+    title: String
     project: ProjectInput!
     tags: [String!]
     images: [ImageInput!]
@@ -20,6 +20,11 @@ export const typeDefs = `#graphql
   }
 
   input ImageInput {
+    type: String!
+    fields: ImageFields!
+  }
+
+  input ImageFields {
     title: String!
     src: String!
     alt: String!
@@ -30,6 +35,11 @@ export const typeDefs = `#graphql
   }
 
   input TextInput {
+    type: String!
+    fields: TextFields!
+  }
+
+  input TextFields {
     title: String!
     payload: String!
     project: ProjectInput!
@@ -53,8 +63,7 @@ export const typeDefs = `#graphql
   #END USER AND AUTH TYPES
 
   #CONTENT DATA TYPES
-
-  type Image {
+  type ImageData {
     title: String!
     src: String!
     alt: String!
@@ -62,23 +71,31 @@ export const typeDefs = `#graphql
     order: [String!]
     copyright: String
     tags: [String!]
+  }
+  type Image {
+    type: String!
+    fields: ImageData!
     uploadedby: User!
     uploadedon: String!
   } 
 
-  type Text {
+  type TextData {
     title: String!
     payload: String!
     project: Project!
     order: [String!]
     tags: [String!]
+  }
+  type Text {
+    type: String!
+    fields: TextData!
     createdby: User!
     createdon: String!
   }
 
   type ContentTypeDefinationSuccess{
     message: String
-    id: String
+    contentID: String
     type: String
     date: String
   }
@@ -128,12 +145,12 @@ export const typeDefs = `#graphql
   type Mutation {
     signUp(fullname: String!, email: String!, password: String!): User
     logIn(email: String!, password: String!): AuthDetails
-    createParcel(input: ParcelInput!): ContentTypeDefinationSuccess
   }
 
   type Mutation {
     createText(textData: TextInput!): ContentTypeDefinationSuccess
     createProject(projectData: ProjectInput): ContentTypeDefinationSuccess
+    createParcel(input: ParcelInput!): ContentTypeDefinationSuccess
   }
   #END MUTATION TYPES
 `;

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-export const imageSchema = new Schema({
+const imageFields = new Schema({
     title: {
         type: String,
         required: true,
@@ -23,12 +23,6 @@ export const imageSchema = new Schema({
         required: true,
     },
 
-    project: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project',
-        required: [true, 'image cant be found in stated project'],
-    },
-
     order: {
         type: [String],
         default: []
@@ -38,10 +32,17 @@ export const imageSchema = new Schema({
         type: [String],
         default: [],
     },
+});
 
-    uploadedby: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+export const imageSchema = new Schema({
+    type: {
+        type: String,
+        required: true,
+    },
+
+    fields: {
+        type: [imageFields],
+        required: true,
     },
 
     uploadedon: {

@@ -41,26 +41,96 @@ export async function getUser(userID) {
     }
 }
 
+function transformImages(images) {
+  return images.map((image) => {
+    const transformedImage = {
+      type: image.type,
+      fields: transformImageFields(image.fields),
+      uploadedon: image.uploadedon,
+    };
+
+    return transformedImage;
+  });
+}
+
+function transformImageFields(fields) {
+  return fields.map((imageField) => ({
+    title: imageField.title,
+    src: imageField.src,
+    alt: imageField.alt,
+    copyright: imageField.copyright,
+    order: imageField.order,
+    tags: imageField.tags,
+  }));
+}
+
+function transformTexts(texts) {
+  return texts.map((text) => {
+    const transformedText = {
+      type: text.type,
+      fields: {
+        title: text.fields.title,
+        payload: text.fields.payload,
+        tags: text.fields.tags,
+        order: text.fields.order,
+      },
+      createdon: text.createdon,
+    };
+
+    return transformedText;
+  });
+}
+function transformToGraphQLFormat(field) {
+  console.log("Parcels received for transformation:", field);
+
+  const transformedParcels = field.map((parcel) => {
+    const transformedParcel = {
+      _id: parcel._id,
+      title: parcel.title,
+      project: parcel.project,
+      tags: parcel.tags,
+      order: parcel.order,
+      createdby: parcel.createdby,
+      createdon: parcel.createdon,
+    };
+
+    transformedParcel.images = transformImages(parcel.images);
+    transformedParcel.texts = transformTexts(parcel.texts);
+
+    return transformedParcel;
+  });
+
+  console.log("Transformed Parcels:", transformedParcels);
+
+  const transformedImages = transformedParcels.flatMap((parcel) => parcel.images);
+  const transformedTexts = transformedParcels.flatMap((parcel) => parcel.texts);
+
+  console.log("Transformed Images:", transformedImages);
+  console.log("Transformed Texts:", transformedTexts);
+
+  return {
+    parcels: transformedParcels,
+    images: transformedImages,
+    texts: transformedTexts,
+  };
+}
+
 /**
  * Resolves parcels query
  * @returns A list of all parcels from the database
  */
 export async function getParcels(args) {
   try {
-    // Check if args.project is present and not "null"
-    const filter = args.project && args.project !== "null" ? { project: args.project } : {};
-
-    const result = await Parcel.find(filter)
-      .populate('createdby')
-      .populate('texts')
-      .populate('images')
-      .populate('project');
-
-    console.log(result);
-    return result;
-  } catch (error) {
-    console.error(error);
-    throw error;
+    const projectTitle = args.filterBy.project.title;
+    console.log("Project Title:", projectTitle); // Check if projectTitle is defined
+    const parcels = await Parcel.find({ project: projectTitle });
+    // In your GraphQL resolver or query
+    console.log(parcels)
+    const transformedData = transformToGraphQLFormat(parcels);
+    console.log(transformedData);
+    return [transformedData];    
+  } catch(error){
+    console.error.apply(error);
   }
 }
 
@@ -233,46 +303,11 @@ export async function createParcel(parcelData, userID) {
   try{
     const { images, texts } = parcelData.input;
 
-    const imagePromises = images.map(async (image) => {
-      const newImage = new Image({
-        title: image.title,
-        src: image.src,
-        alt: image.alt,
-        project: image.project.title,
-        copyright: image.copyright,
-        uploadedby: userID,
-        orders: Object.hasOwnProperty.call(image, 'order') ? image.order : [`${image.project.title}`],
-        tags: Object.hasOwnProperty.call(image, 'tags') ? image.tags : [`${image.project.title}`]
-      });
-
-      return await newImage.save();
-    });
-
-    const textPromises = texts.map(async (text) => {
-      const newText = new Text({
-        title: text.title,
-        payload: text.payload,
-        project: text.project.title,
-        copyright: text.copyright,
-        createdby: userID,
-        orders: Object.hasOwnProperty.call(text, 'order') ? text.order : [`${text.project.title}`],
-        tags: Object.hasOwnProperty.call(text, 'tags') ? text.tags : [`${text.project.title}`]
-      });
-
-      return await newText.save();
-    });
-
-    const [imagesData, textsData] = await Promise.all([Promise.all(imagePromises), Promise.all(textPromises)]);
-
-    const imageTitles = imagesData.map(data => data.title);
-    const textTitles = textsData.map(data => data.title);
-    // save the parcel to database
-
     const newParcel = new Parcel({
         title: parcelData.input.title,
         project: parcelData.input.project.title,
-        images: imageTitles,
-        texts: textTitles,
+        images: images,
+        texts: texts,
         orders: Object.hasOwnProperty.call(parcelData.input, 'order') ? parcelData.input.order : [`${parcelData.input.title}`],
         tags: Object.hasOwnProperty.call(parcelData.input, 'tags') ? parcelData.input.tags : [`${parcelData.input.title}`],
         createdby: userID,
@@ -286,7 +321,7 @@ export async function createParcel(parcelData, userID) {
 
     return {
         message: `A new parcel ${parcelData.input.title} has been created!`,
-        contentID: data._id.toString(),
+        contentID: data.id,
         type: "Parcel",
         date: userFriendlyDateTimeString,
     } 

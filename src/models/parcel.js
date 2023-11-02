@@ -20,15 +20,15 @@ export const parcelSchema = new Schema({
         type: [String],
     },
 
-    images: [{
+    images: {
         type: [imageSchema],
-        ref: 'Image',
-    }],
+        default: [],
+    },
 
-    texts: [{
+    texts: {
         type: [textSchema],
-        ref: 'Text',
-    }],
+        default: [],
+    },
 
     order: {
         type: [String],
